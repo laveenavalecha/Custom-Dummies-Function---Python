@@ -1,0 +1,23 @@
+def dummies(data,var,freq_cutoff=0):
+    t=data[var].value_counts(normalize=True)  #get value counts of all the unique data in specified feature variable 
+    t=t[t.values>freq_cutoff] #filter the values having count less than specified cutoff
+    t=t.sort_values() #sort according to the value counts
+    t_min=t.idxmin() # get the data having minimum count 
+    t=t.drop([t_min]) # drop that data as we make n-1 dummies 
+    categories=t.index # making dummies for rest unique data values
+
+    for cat in categories :
+        name=var+'_'+cat
+        name=re.sub(" ","",name) 
+        name=re.sub("-","_",name)
+        name=re.sub("\\?","Q",name) 
+        name=re.sub("<","LT_",name) 
+        name=re.sub("\\+","",name) 
+        name=re.sub("\\/","_",name) 
+        name=re.sub(">","GT_",name) 
+        name=re.sub("=","EQ_",name)
+        name=re.sub(",","",name)
+        data[name]=(data[var]==cat)+0 
+               
+    data=data.drop(columns=[var]) #dropping original feature variable after making its dummies
+    return data
